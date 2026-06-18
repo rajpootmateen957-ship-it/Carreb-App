@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from 'react'
+import { useNavigate, useLocation } from 'react-router-dom'
 
 export default function Navbar() {
+  const navigate = useNavigate()
+  const location = useLocation()
   const [isMobile, setIsMobile] = useState(false)
   const [isOpen, setIsOpen] = useState(false)
   const [hoveredLink, setHoveredLink] = useState(null)
   const [isGhostHovered, setIsGhostHovered] = useState(false)
   const [isPrimaryHovered, setIsPrimaryHovered] = useState(false)
-  
-  // Modal states
-  const [isLoginOpen, setIsLoginOpen] = useState(false)
-  const [isSignUpOpen, setIsSignUpOpen] = useState(false)
+
 
   useEffect(() => {
     const handleResize = () => {
@@ -259,7 +259,16 @@ export default function Navbar() {
     <header style={styles.header}>
       <div style={styles.inner}>
         {/* Logo Section */}
-        <div style={styles.brand} onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
+        <div 
+          style={styles.brand} 
+          onClick={() => {
+            if (location.pathname === '/') {
+              window.scrollTo({ top: 0, behavior: 'smooth' })
+            } else {
+              navigate('/')
+            }
+          }}
+        >
           <img 
             style={styles.logo} 
             src="https://carreb1.vercel.app/assets/Images/logo.png" 
@@ -269,18 +278,32 @@ export default function Navbar() {
 
         {/* Navigation Menu (Desktop & Mobile Dropdown) */}
         <nav style={styles.menu}>
-          {navLinks.map((item, index) => (
-            <a
-              key={index}
-              href={item.href}
-              style={styles.link(hoveredLink === index)}
-              onMouseEnter={() => setHoveredLink(index)}
-              onMouseLeave={() => setHoveredLink(null)}
-              onClick={() => setIsOpen(false)}
-            >
-              {item.label}
-            </a>
-          ))}
+          {navLinks.map((item, index) => {
+            const isFAQ = item.label === 'FAQ'
+            const isPricing = item.label === 'Pricing'
+            const targetHref = isFAQ ? '/faq' : (isPricing ? '/pricing' : (location.pathname === '/' ? item.href : `/${item.href}`))
+            return (
+              <a
+                key={index}
+                href={targetHref}
+                style={styles.link(hoveredLink === index)}
+                onMouseEnter={() => setHoveredLink(index)}
+                onMouseLeave={() => setHoveredLink(null)}
+                onClick={(e) => {
+                  setIsOpen(false)
+                  if (isFAQ) {
+                    e.preventDefault()
+                    navigate('/faq')
+                  } else if (isPricing) {
+                    e.preventDefault()
+                    navigate('/pricing')
+                  }
+                }}
+              >
+                {item.label}
+              </a>
+            )
+          })}
 
           {/* Action Buttons inside menu */}
           <div style={styles.actions}>
@@ -290,7 +313,7 @@ export default function Navbar() {
               onMouseLeave={() => setIsGhostHovered(false)}
               onClick={() => {
                 setIsOpen(false)
-                setIsLoginOpen(true)
+                navigate('/login')
               }}
             >
               Login
@@ -302,7 +325,7 @@ export default function Navbar() {
               onMouseLeave={() => setIsPrimaryHovered(false)}
               onClick={() => {
                 setIsOpen(false)
-                setIsSignUpOpen(true)
+                navigate('/signup')
               }}
             >
               Sign Up
@@ -335,60 +358,6 @@ export default function Navbar() {
           )}
         </button>
       </div>
-
-      {/* Login Modal */}
-      {isLoginOpen && (
-        <div style={styles.modalOverlay} onClick={() => setIsLoginOpen(false)}>
-          <div style={styles.modalContainer} onClick={(e) => e.stopPropagation()}>
-            <button style={styles.modalCloseBtn} onClick={() => setIsLoginOpen(false)}>&times;</button>
-            <h2 style={styles.modalTitle}>Welcome Back</h2>
-            <p style={styles.modalSubtitle}>Login to manage your car garage.</p>
-            
-            <form onSubmit={(e) => { e.preventDefault(); alert('Login Form Submitted!'); setIsLoginOpen(false); }}>
-              <div style={styles.inputGroup}>
-                <label style={styles.inputLabel}>Email Address</label>
-                <input type="email" placeholder="name@example.com" required style={styles.inputField} />
-              </div>
-              <div style={styles.inputGroup}>
-                <label style={styles.inputLabel}>Password</label>
-                <input type="password" placeholder="••••••••" required style={styles.inputField} />
-              </div>
-              <button type="submit" style={styles.submitBtn}>
-                Login to Carreb
-              </button>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* Sign Up Modal */}
-      {isSignUpOpen && (
-        <div style={styles.modalOverlay} onClick={() => setIsSignUpOpen(false)}>
-          <div style={styles.modalContainer} onClick={(e) => e.stopPropagation()}>
-            <button style={styles.modalCloseBtn} onClick={() => setIsSignUpOpen(false)}>&times;</button>
-            <h2 style={styles.modalTitle}>Get Started</h2>
-            <p style={styles.modalSubtitle}>Create a free account and start today.</p>
-            
-            <form onSubmit={(e) => { e.preventDefault(); alert('Sign Up Form Submitted!'); setIsSignUpOpen(false); }}>
-              <div style={styles.inputGroup}>
-                <label style={styles.inputLabel}>Full Name</label>
-                <input type="text" placeholder="John Doe" required style={styles.inputField} />
-              </div>
-              <div style={styles.inputGroup}>
-                <label style={styles.inputLabel}>Email Address</label>
-                <input type="email" placeholder="name@example.com" required style={styles.inputField} />
-              </div>
-              <div style={styles.inputGroup}>
-                <label style={styles.inputLabel}>Password</label>
-                <input type="password" placeholder="••••••••" required style={styles.inputField} />
-              </div>
-              <button type="submit" style={styles.submitBtn}>
-                Create Account
-              </button>
-            </form>
-          </div>
-        </div>
-      )}
     </header>
   )
 }

@@ -1,23 +1,24 @@
-export default function Footer() {
+export default function Footer({ showCta = true }) {
   return (
     <>
       {/* ═══════════════════ CTA BANNER ═══════════════════ */}
-      <section
-        style={{
-          width: "100%",
-          backgroundColor: "#1e3d2f",
-          padding: "90px 24px",
-          boxSizing: "border-box",
-          fontFamily: "'Inter', 'Segoe UI', sans-serif",
-          textAlign: "center",
-          position: "relative",
-          overflow: "hidden",
-          minHeight: "320px",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-      >
+      {showCta && (
+        <section
+          style={{
+            width: "100%",
+            backgroundColor: "#1e3d2f",
+            padding: "90px 24px",
+            boxSizing: "border-box",
+            fontFamily: "'Inter', 'Segoe UI', sans-serif",
+            textAlign: "center",
+            position: "relative",
+            overflow: "hidden",
+            minHeight: "320px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
         {/* TOP-LEFT corner concentric dashed arcs */}
         <svg
           style={{ position: "absolute", left: "-60px", top: "-60px", pointerEvents: "none" }}
@@ -110,6 +111,7 @@ export default function Footer() {
           </div>
         </div>
       </section>
+      )}
 
       {/* ═══════════════════ FOOTER ═══════════════════ */}
       <footer
